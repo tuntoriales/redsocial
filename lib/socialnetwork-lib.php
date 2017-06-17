@@ -173,7 +173,7 @@ function Headerb ()
               <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-left">
-                  <a href="#" class="btn btn-default btn-flat">Mi perfil</a>
+                  <a href="editarperfil.php?id=<?php echo $_SESSION['id'];?>" class="btn btn-default btn-flat">Editar perfil</a>
                 </div>
                 <div class="pull-right">
                   <a href="logout.php" class="btn btn-default btn-flat">Cerrar sesión</a>

@@ -60,6 +60,21 @@ if(!isset($_SESSION['usuario']))
     <!-- Main content -->
     <section class="content">
 
+    <!-- Script validar caracteres -->
+    <script type="text/javascript">    
+    function validarn(e) {
+    tecla = (document.all) ? e.keyCode : e.which;
+   if (tecla==8) return true;
+   if (tecla==9) return true;
+   if (tecla==11) return true;
+    patron = /[A-Za-zñ!#$%&()=?¿¡*+0-9-_ ]/;
+ 
+    te = String.fromCharCode(tecla);
+    return patron.test(te);
+} 
+    </script>
+    <!-- Script validar caracteres -->
+
       
       <!-- Main row -->
       <div class="row">
@@ -85,7 +100,7 @@ if(!isset($_SESSION['usuario']))
                 <div class="box-footer">
                   <form action="" method="post" enctype="multipart/form-data">
                     <div class="input-group">
-                      <textarea name="publicacion" placeholder="¿Qué estás pensando?" class="form-control" cols="200" rows="3" required></textarea>
+                      <textarea name="publicacion" onkeypress="return validarn(event)" placeholder="¿Qué estás pensando?" class="form-control" cols="200" rows="3" required></textarea>
                       <br><br><br><br>
 
                     <!-- START Input file nuevo diseño .-->
@@ -124,7 +139,23 @@ if(!isset($_SESSION['usuario']))
                       $nombre = '';
                     }
 
-                    $subir = mysql_query("INSERT INTO publicaciones (usuario,fecha,contenido,imagen,comentarios) values ('".$_SESSION['id']."',now(),'$publicacion','$nombre','1')");
+                    $llamar = mysql_num_rows(mysql_query("SELECT * FROM albumes WHERE usuario ='".$_SESSION['id']."' AND nombre = 'Publicaciones'"));
+
+                    if($llamar >= 1) {} else {
+
+                    $crearalbum = mysql_query("INSERT INTO albumes (usuario,fecha,nombre) values ('".$_SESSION['id']."',now(),'Publicaciones')");
+
+                   }
+
+                   $idalbum = mysql_query("SELECT * FROM albumes WHERE usuario ='".$_SESSION['id']."' AND nombre = 'Publicaciones'");
+                   $alb = mysql_fetch_array($idalbum);
+
+                    $subirimg = mysql_query("INSERT INTO fotos (usuario,fecha,ruta,album,publicacion) values ('".$_SESSION['id']."',now(),'$nombre','".$alb['id_alb']."','$next_increment')");
+
+                    $llamadoimg = mysql_query("SELECT id_fot FROM fotos WHERE usuario = '".$_SESSION['id']."' ORDER BY id_fot desc");
+                    $llaim = mysql_fetch_array($llamadoimg);
+
+                    $subir = mysql_query("INSERT INTO publicaciones (usuario,fecha,contenido,imagen,album,comentarios) values ('".$_SESSION['id']."',now(),'$publicacion','".$llaim['id_fot']."','".$alb['id_alb']."','1')");
 
                     if($subir) {echo '<script>window.location="index.php"</script>';}
 

@@ -1,6 +1,6 @@
 <?php
 include 'lib/config.php';
-$CantidadMostrar=5;
+$CantidadMostrar=1;
 $aid = mysql_real_escape_string($_GET['id']);
      // Validado  la variable GET
     $compag         =(int)(!isset($_GET['pag'])) ? 1 : $_GET['pag']; 
@@ -23,6 +23,9 @@ $aid = mysql_real_escape_string($_GET['id']);
 
 		$usuariob = mysql_query("SELECT * FROM usuarios WHERE id_use = '$userid'");
 		$use = mysql_fetch_array($usuariob);
+
+    $fotos = mysql_query("SELECT * FROM fotos WHERE publicacion = '$lista[id_pub]'");
+    $fot = mysql_fetch_array($fotos);
 	?>
 	<!-- Post -->
                 <div class="post">
@@ -42,7 +45,7 @@ $aid = mysql_real_escape_string($_GET['id']);
                   if($lista['imagen'] != '')
                   {
                   ?>
-                  <img src="publicaciones/<?php echo $lista['imagen'];?>" width="50%">
+                  <img src="publicaciones/<?php echo $fot['ruta'];?>" width="50%">
                   <?php
                   }
                   ?>

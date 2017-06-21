@@ -172,11 +172,11 @@ if(!isset($_SESSION['usuario']))
                 
                 <center>
                 <?php
-                $fotosa = mysql_query("SELECT imagen FROM publicaciones WHERE usuario = '$id' AND imagen != ''");
+                $fotosa = mysql_query("SELECT ruta FROM fotos WHERE usuario = '$id'");
                 while($fot=mysql_fetch_array($fotosa))
                 {
                 ?>
-                  <a href="publicaciones/<?php echo $fot['imagen'];?>"><img src="publicaciones/<?php echo $fot['imagen'];?>" width="19%"> </a>
+                  <a href="publicaciones/<?php echo $fot['ruta'];?>"><img src="publicaciones/<?php echo $fot['ruta'];?>" width="19%"> </a>
                 <?php
                 }
                 ?>

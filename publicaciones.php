@@ -21,7 +21,10 @@ $CantidadMostrar=5;
 		$userid = mysql_real_escape_string($lista['usuario']);
 
 		$usuariob = mysql_query("SELECT * FROM usuarios WHERE id_use = '$userid'");
-		$use = mysql_fetch_array($usuariob);
+    $use = mysql_fetch_array($usuariob);
+
+    $fotos = mysql_query("SELECT * FROM fotos WHERE publicacion = '$lista[id_pub]'");
+    $fot = mysql_fetch_array($fotos);
 	?>
 	<!-- START PUBLICACIONES -->
           <!-- Box Comment -->
@@ -48,7 +51,7 @@ $CantidadMostrar=5;
               if($lista['imagen'] != '')
               {
               ?>
-              <img src="publicaciones/<?php echo $lista['imagen'];?>" width="50%">
+              <img src="publicaciones/<?php echo $fot['ruta'];?>" width="50%">
               <?php
           	  }
           	  ?>

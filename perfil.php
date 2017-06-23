@@ -53,6 +53,7 @@ if(!isset($_SESSION['usuario']))
   if(isset($_GET['id']))
   {
   $id = mysql_real_escape_string($_GET['id']);
+  $pag = $_GET['perfil'];
 
   $infouser = mysql_query("SELECT * FROM usuarios WHERE id_use = '$id'");
   $use = mysql_fetch_array($infouser);
@@ -71,7 +72,10 @@ if(!isset($_SESSION['usuario']))
             <div class="box-body box-profile">
               <img class="profile-user-img img-responsive img-circle" src="avatars/<?php echo $use['avatar'];?>" alt="User profile picture">
 
-              <h3 class="profile-username text-center"><?php echo $use['nombre'];?></h3>
+              <h3 class="profile-username text-center"><?php echo $use['nombre'];?></h3> 
+              <?php if($use['verificado'] != 0) {?>
+              <center><span class="glyphicon glyphicon-ok"></span></center>
+              <?php } ?>
 
               <p class="text-muted text-center">Software Engineer</p>
 
@@ -138,57 +142,27 @@ if(!isset($_SESSION['usuario']))
         <div class="col-md-9">
           <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
-              <li class="active"><a href="#actividad" data-toggle="tab">Actividad</a></li>
-              <li><a href="#informacion" data-toggle="tab">Información</a></li>
-              <li><a href="#fotos" data-toggle="tab">Fotos</a></li>
+              <li class="<?php echo $pag == 'miactividad' ? 'active' : ''; ?>"><a href="?id=<?php echo $id;?>&perfil=miactividad">Actividad</a></li>
+              <li class="<?php echo $pag == 'informacion' ? 'active' : ''; ?>"><a href="?id=<?php echo $id;?>&perfil=informacion">Información</a></li>
+              <li class="<?php echo $pag == 'fotos' ? 'active' : ''; ?>"><a href="?id=<?php echo $id;?>&perfil=fotos">Fotos</a></li>
             </ul>
             <div class="tab-content">
-              <div class="active tab-pane" id="actividad">
 
                 
           <!-- codigo scroll -->
           <div class="scroll">
-            <?php require_once 'miactividad.php'; ?>
+          
+            <?php
+            $pagina = isset($_GET['perfil']) ? strtolower($_GET['perfil']) : 'miactividad';
+            require_once $pagina.'.php';
+            ?>
+
           </div>
 
-            <script>
-            //Simple codigo para hacer la paginacion scroll
-            $(document).ready(function() {
-              $('.scroll').jscroll({
-                loadingHtml: '<img src="images/invisible.png" alt="Loading" />'
-            });
-            });
-            </script>
-          <!-- codigo scroll -->
+            
                 
               </div>
 
-              <!-- /.tab-pane -->
-              <div class="tab-pane" id="informacion">
-              </div>
-              <!-- /.tab-pane -->
-
-              <div class="tab-pane" id="fotos">
-                
-                <center>
-                <?php
-                $fotosa = mysql_query("SELECT ruta FROM fotos WHERE usuario = '$id'");
-                while($fot=mysql_fetch_array($fotosa))
-                {
-                ?>
-                  <a href="publicaciones/<?php echo $fot['ruta'];?>"><img src="publicaciones/<?php echo $fot['ruta'];?>" width="19%"> </a>
-                <?php
-                }
-                ?>
-                </center>
-
-
-              </div>
-              <!-- /.tab-pane -->
-
-
-            </div>
-            <!-- /.tab-content -->
           </div>
           <!-- /.nav-tabs-custom -->
         </div>

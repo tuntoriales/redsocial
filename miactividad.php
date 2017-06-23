@@ -73,3 +73,12 @@ $aid = mysql_real_escape_string($_GET['id']);
 	echo "<a href=\"miactividad.php?id=$aid&pag=".$IncrimentNum."\">Seguiente</a>";
 	}
 ?>
+<script>
+            //Simple codigo para hacer la paginacion scroll
+            $(document).ready(function() {
+              $('.scroll').jscroll({
+                loadingHtml: '<img src="images/invisible.png" alt="Loading" />'
+            });
+            });
+            </script>
+          <!-- codigo scroll -->

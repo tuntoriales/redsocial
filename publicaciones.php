@@ -1,5 +1,46 @@
 <?php
 include 'lib/config.php';
+?>
+<script type="text/javascript">
+$(document).ready(function() {
+
+    $(".enviar-btn").keypress(function(event) {
+
+      if ( event.which == 13 ) {
+
+        var getpID =  $(this).parent().attr('id').replace('record-','');
+
+        var usuario = $("input#usuario").val();
+        var comentario = $("#comentario-"+getpID).val();
+        var publicacion = getpID;
+        var avatar = $("input#avatar").val();
+        var nombre = $("input#nombre").val();
+        var now = new Date();
+        var date_show = now.getDate() + '-' + now.getMonth() + '-' + now.getFullYear() + ' ' + now.getHours() + ':' + + now.getMinutes() + ':' + + now.getSeconds();
+
+        if (comentario == '') {
+            alert('Debes añadir un comentario');
+            return false;
+        }
+
+        var dataString = 'usuario=' + usuario + '&comentario=' + comentario + '&publicacion=' + publicacion;
+
+        $.ajax({
+                type: "POST",
+                url: "agregarcomentario.php",
+                data: dataString,
+                success: function() {
+                    $('#nuevocomentario'+getpID).append('<div class="box-comment"><img class="img-circle img-sm" src="avatars/'+ avatar +'"><div class="comment-text"><span class="username"> '+ nombre +'<span class="text-muted pull-right">' + date_show + '</span></span>' + comentario + '</div></div>');
+                }
+        });
+        return false;
+      }
+    });
+
+});
+</script>
+
+<?php
 $CantidadMostrar=5;
      // Validado  la variable GET
     $compag         =(int)(!isset($_GET['pag'])) ? 1 : $_GET['pag']; 
@@ -48,7 +89,7 @@ $CantidadMostrar=5;
               <p><?php echo $lista['contenido'];?></p>
 
               <?php 
-              if($lista['imagen'] != '')
+              if($lista['imagen'] != 0)
               {
               ?>
               <img src="publicaciones/<?php echo $fot['ruta'];?>" width="50%">
@@ -57,45 +98,60 @@ $CantidadMostrar=5;
           	  ?>
 
               <br><br>
-
+              <?php 
+              $numcomen = mysql_num_rows(mysql_query("SELECT * FROM comentarios WHERE publicacion = '".$lista['id_pub']."'"));
+              ?>
               <!-- Social sharing buttons -->
-              <button type="button" class="btn btn-default btn-xs"><i class="fa fa-share"></i> Compartir</button>
-              <button type="button" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up"></i> Me gusta</button>
-              <span class="pull-right text-muted">45 likes - 2 comments</span>
+            <ul class="list-inline">
+                    <li><button type="button" class="btn btn-default btn-xs"><i class="fa fa-share"></i> Compartir</button></a></li>
+                    <li><button type="button" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up"></i> Me gusta</button></li>
+                    <li class="pull-right">
+                      <span href="#" class="link-black text-sm"><i class="fa fa-comments-o margin-r-5"></i> Comentarios
+                        (<?php echo $numcomen; ?>)</span></li>
+                  </ul>
             </div>
             <!-- /.box-body -->
             <div class="box-footer box-comments">
+
+            <?php 
+            $comentarios = mysql_query("SELECT * FROM comentarios WHERE publicacion = '".$lista['id_pub']."' ORDER BY id_com desc LIMIT 2");
+            while($com=mysql_fetch_array($comentarios)){
+              $usuarioc = mysql_query("SELECT * FROM usuarios WHERE id_use = '".$com['usuario']."'");
+              $usec = mysql_fetch_array($usuarioc);
+              ?>
+
+
               <div class="box-comment">
                 <!-- User image -->
-                <img class="img-circle img-sm" src="dist/img/user3-128x128.jpg" alt="User Image">
+                <img class="img-circle img-sm" src="avatars/<?php echo $usec['avatar'];?>">
 
                 <div class="comment-text">
                       <span class="username">
-                        Maria Gonzales
-                        <span class="text-muted pull-right">8:03 PM Today</span>
+                        <?php echo $usec['usuario'];?>
+                        <span class="text-muted pull-right"><?php echo $com['fecha'];?></span>
                       </span><!-- /.username -->
-                  It is a long established fact that a reader will be distracted
-                  by the readable content of a page when looking at its layout.
+                  <?php echo $com['comentario'];?>
                 </div>
                 <!-- /.comment-text -->
               </div>
               <!-- /.box-comment -->
-              <div class="box-comment">
-                <!-- User image -->
-                <img class="img-circle img-sm" src="dist/img/user5-128x128.jpg" alt="User Image">
+              <?php } ?>
 
-                <div class="comment-text">
-                      <span class="username">
-                        Nora Havisham
-                        <span class="text-muted pull-right">8:03 PM Today</span>
-                      </span><!-- /.username -->
-                  The point of using Lorem Ipsum is that it has a more-or-less
-                  normal distribution of letters, as opposed to using
-                  'Content here, content here', making it look like readable English.
-                </div>
-                <!-- /.comment-text -->
-              </div>
-              <!-- /.box-comment -->
+              <?php if ($numcomen > 2) { ?> 
+              <br>
+                <center><span onclick="location.href='publicacion.php?id=<?php echo $lista['id_pub'];?>';" style="cursor:pointer; color: #3C8DBC;">Ver todos los comentarios</span></center>
+              <?php } ?>
+
+              <div id="nuevocomentario<?php  echo $lista['id_pub'];?>"></div>
+              <br>
+                <form method="post" action="">
+                <label id="record-<?php  echo $lista['id_pub'];?>">
+                <input type="text" class="enviar-btn form-control input-sm" style="width: 800px;" placeholder="Escribe un comentario" name="comentario" id="comentario-<?php  echo $lista['id_pub'];?>">
+                <input type="hidden" name="usuario" value="<?php echo $_SESSION['id'];?>" id="usuario">
+                <input type="hidden" name="publicacion" value="<?php echo $lista['id_pub'];?>" id="publicacion">
+                <input type="hidden" name="avatar" value="<?php echo $_SESSION['avatar'];?>" id="avatar">
+                <input type="hidden" name="nombre" value="<?php echo $_SESSION['usuario'];?>" id="nombre">
+                </form>
 
               </div>
 

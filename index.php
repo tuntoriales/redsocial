@@ -67,7 +67,7 @@ if(!isset($_SESSION['usuario']))
    if (tecla==8) return true;
    if (tecla==9) return true;
    if (tecla==11) return true;
-    patron = /[A-Za-zñ!#$%&()=?¿¡*+0-9-_ ]/;
+    patron = /[A-Za-zñ!#$%&()=?¿¡*+0-9-_á-úÁ-Ú :;]/;
  
     te = String.fromCharCode(tecla);
     return patron.test(te);
@@ -133,11 +133,7 @@ if(!isset($_SESSION['usuario']))
                       $destino = "publicaciones/".$name;
                       $nombre = $name;
                       copy($rfoto, $destino);
-                    }
-                    else
-                    {
-                      $nombre = '';
-                    }
+                    
 
                     $llamar = mysql_num_rows(mysql_query("SELECT * FROM albumes WHERE usuario ='".$_SESSION['id']."' AND nombre = 'Publicaciones'"));
 
@@ -154,6 +150,12 @@ if(!isset($_SESSION['usuario']))
 
                     $llamadoimg = mysql_query("SELECT id_fot FROM fotos WHERE usuario = '".$_SESSION['id']."' ORDER BY id_fot desc");
                     $llaim = mysql_fetch_array($llamadoimg);
+
+                    }
+                    else
+                    {
+                      $nombre = '';
+                    }
 
                     $subir = mysql_query("INSERT INTO publicaciones (usuario,fecha,contenido,imagen,album,comentarios) values ('".$_SESSION['id']."',now(),'$publicacion','".$llaim['id_fot']."','".$alb['id_alb']."','1')");
 

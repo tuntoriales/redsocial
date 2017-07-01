@@ -1,6 +1,7 @@
 <?php
 include 'lib/config.php';
 ?>
+<script type="text/javascript" src="js/likes.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
 
@@ -103,8 +104,22 @@ $CantidadMostrar=5;
               ?>
               <!-- Social sharing buttons -->
             <ul class="list-inline">
-                    <li><button type="button" class="btn btn-default btn-xs"><i class="fa fa-share"></i> Compartir</button></a></li>
-                    <li><button type="button" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up"></i> Me gusta</button></li>
+
+              <?php
+              $query = mysql_query("SELECT * FROM likes WHERE post = '".$lista['id_pub']."' AND usuario = ".$_SESSION['id']."");
+
+              if (mysql_num_rows($query) == 0) { ?>
+
+                <li><div class="btn btn-default btn-xs like" id="<?php echo $lista['id_pub']; ?>"><i class="fa fa-thumbs-o-up"></i> Me gusta </div><span id="likes_<?php echo $lista['id_pub']; ?>"> (<?php echo $lista['likes']; ?>)</span></li>
+
+              <?php } else { ?>
+                
+                <li><div class="btn btn-default btn-xs like" id="<?php echo $lista['id_pub']; ?>"><i class="fa fa-thumbs-o-up"></i> No me gusta </div><span id="likes_<?php echo $lista['id_pub']; ?>"> (<?php echo $lista['likes']; ?>)</span></li>
+
+              <?php } ?>
+
+
+
                     <li class="pull-right">
                       <span href="#" class="link-black text-sm"><i class="fa fa-comments-o margin-r-5"></i> Comentarios
                         (<?php echo $numcomen; ?>)</span></li>

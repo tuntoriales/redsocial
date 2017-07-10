@@ -57,6 +57,9 @@ if(!isset($_SESSION['usuario']))
 
   $infouser = mysql_query("SELECT * FROM usuarios WHERE id_use = '$id'");
   $use = mysql_fetch_array($infouser);
+
+  $amigos = mysql_query("SELECT * FROM amigos WHERE de = '$id' AND para = '".$_SESSION['id']."' OR de = '".$_SESSION['id']."' AND para = '$id'");
+  $ami = mysql_fetch_array($amigos);
   ?>
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -90,8 +93,54 @@ if(!isset($_SESSION['usuario']))
                   <b>Friends</b> <a class="pull-right">13,287</a>
                 </li>
               </ul>
+              
+              <?php if($_SESSION['id'] != $id) {?>
+              <form action="" method="post">
+              
+              <?php if(mysql_num_rows($amigos) >= 1 AND $ami['estado'] == 0) { ?>
+              <center><h4>Esperando respuesta</h4></center>
+              <?php } else { ?>
 
-              <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>
+              <?php if($use['privada'] == 1 AND $ami['estado'] == 0) { ?>
+              <input type="submit" class="btn btn-primary btn-block" name="seguir" value="Enviar solicitud de amistad">
+              <?php } ?>
+              <?php if($use['privada'] == 1 AND $ami['estado'] == 1) { ?>
+              <input type="submit" class="btn btn-danger btn-block" name="dejarseguir" value="Dejar de seguir">
+              <?php } ?>
+              <?php if($use['privada'] == 0 AND $ami['estado'] == 0) { ?>
+              <input type="submit" class="btn btn-primary btn-block" name="seguirdirecto" value="Seguir">
+              <?php } ?>
+              <?php if($use['privada'] == 0 AND $ami['estado'] == 1) { ?>
+              <input type="submit" class="btn btn-danger btn-block" name="dejarseguir" value="Dejar de seguir">
+              <?php } ?>
+
+
+              <?php } ?>
+              </form>
+              <?php } ?>
+
+              <?php
+              if(isset($_POST['seguir'])) {
+                $add = mysql_query("INSERT INTO amigos (de,para,fecha,estado) values ('".$_SESSION['id']."','$id',now(),'0')");
+                if($add) {echo '<script>window.location="perfil.php?id='.$id.'"</script>';}
+              }
+              ?>
+
+              <?php
+              if(isset($_POST['seguirdirecto'])) {
+                $add = mysql_query("INSERT INTO amigos (de,para,fecha,estado) values ('".$_SESSION['id']."','$id',now(),'1')");
+                if($add) {echo '<script>window.location="perfil.php?id='.$id.'"</script>';}
+              }
+              ?>
+
+              <?php
+              if(isset($_POST['dejarseguir'])) {
+                $add = mysql_query("DELETE FROM amigos WHERE de = '$id' AND para = '".$_SESSION['id']."' OR de = '".$_SESSION['id']."' AND para = '$id'");
+                if($add) {echo '<script>window.location="perfil.php?id='.$id.'"</script>';}
+              }
+              ?>
+
+
             </div>
             <!-- /.box-body -->
           </div>
@@ -151,18 +200,42 @@ if(!isset($_SESSION['usuario']))
                 
           <!-- codigo scroll -->
           <div class="scroll">
+
+          <?php
+          if($use['privada'] != 1) { ?>
           
             <?php
             $pagina = isset($_GET['perfil']) ? strtolower($_GET['perfil']) : 'miactividad';
             require_once $pagina.'.php';
             ?>
 
+          <?php } elseif ($use['privada'] == 1 AND $ami['estado'] == 1) { ?>
+              
+            <?php
+            $pagina = isset($_GET['perfil']) ? strtolower($_GET['perfil']) : 'miactividad';
+            require_once $pagina.'.php';
+            ?>
+
+          <?php } elseif ($use['privada'] == 1 AND $_SESSION['id'] == $id) { ?>
+              
+            <?php
+            $pagina = isset($_GET['perfil']) ? strtolower($_GET['perfil']) : 'miactividad';
+            require_once $pagina.'.php';
+            ?>
+
+
+          <?php } else { ?>
+
+          <center><h2>Este perfil es privado, envia una solicitud</h2></center>
+
+          <?php } ?>
+
           </div>
 
             
                 
               </div>
-
+  
           </div>
           <!-- /.nav-tabs-custom -->
         </div>
@@ -382,5 +455,6 @@ if(!isset($_SESSION['usuario']))
 </body>
 </html>
 <?php
-}
+
+} // finaliza if GET
 ?>

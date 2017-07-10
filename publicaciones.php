@@ -93,7 +93,7 @@ $CantidadMostrar=5;
               if($lista['imagen'] != 0)
               {
               ?>
-              <img src="publicaciones/<?php echo $fot['ruta'];?>" width="50%">
+              <img src="publicaciones/<?php echo $fot['ruta'];?>" width="100%">
               <?php
           	  }
           	  ?>

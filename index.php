@@ -67,7 +67,7 @@ if(!isset($_SESSION['usuario']))
    if (tecla==8) return true;
    if (tecla==9) return true;
    if (tecla==11) return true;
-    patron = /[A-Za-zñ!#$%&()=?¿¡*+0-9-_á-úÁ-Ú :;]/;
+    patron = /[A-Za-zñ!#$%&()=?¿¡*+0-9-_á-úÁ-Ú :;,.]/;
  
     te = String.fromCharCode(tecla);
     return patron.test(te);
@@ -196,76 +196,44 @@ if(!isset($_SESSION['usuario']))
           <!-- PRODUCT LIST -->
           <div class="box box-primary">
             <div class="box-header with-border">
-              <h3 class="box-title">Solicitudes de amistad ó últimos seguidores</h3>
+              <h3 class="box-title">Solicitudes de amistad</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
               <ul class="products-list product-list-in-box">
+
+              <?php $amistade = mysql_query("SELECT * FROM amigos WHERE para = '".$_SESSION['id']."' AND estado = '0' order by id_ami desc LIMIT 4");
+              while($am = mysql_fetch_array($amistade)) { 
+
+                $use = mysql_query("SELECT * FROM usuarios WHERE id_use = '".$am['de']."'");
+                $us = mysql_fetch_array($use);
+                ?>
                 <li class="item">
                   <div class="product-img">
-                    <img src="dist/img/avatar2.png" alt="Product Image">
+                    <img src="avatars/<?php echo $us['avatar']; ?>" alt="Product Image">
                   </div>
                   <div class="product-info">
-                    <a href="javascript:void(0)" class="product-title">Marcela Correa
-                      <span class="label label-success pull-right">Aceptar</span></a>
+                  <?php echo $us['usuario']; ?>
+                      <a href="solicitud.php?action=aceptar&id=<?php echo $am['id_ami']; ?>"><span class="label label-success pull-right">Aceptar</span></a>
                       <br>
-                      <span class="label label-danger pull-right">Cancelar</span></a>
+                      <a href="solicitud.php?action=rechazar&id=<?php echo $am['id_ami']; ?>"><span class="label label-danger pull-right">Rechazar</span></a>
                         <span class="product-description">
-                          Ciudad
+                          <?php echo $us['sexo']; ?>
                         </span>
                   </div>
                 </li>
                 <!-- /.item -->
-                <li class="item">
-                  <div class="product-img">
-                    <img src="dist/img/avatar3.png" alt="Product Image">
-                  </div>
-                  <div class="product-info">
-                    <a href="javascript:void(0)" class="product-title">Adriana Ozuna
-                      <span class="label label-success pull-right">Aceptar</span></a>
-                      <br>
-                      <span class="label label-danger pull-right">Cancelar</span></a>
-                        <span class="product-description">
-                          Ciudad
-                        </span>
-                  </div>
-                </li>
-                <!-- /.item -->
-                <li class="item">
-                  <div class="product-img">
-                    <img src="dist/img/avatar.png" alt="Product Image">
-                  </div>
-                  <div class="product-info">
-                  <a href="javascript:void(0)" class="product-title">Carlos andrés
-                    <span class="label label-success pull-right">Aceptar</span></a>
-                      <br>
-                    <span class="label label-danger pull-right">Cancelar</span></a>
-                        <span class="product-description">
-                          Ciudad
-                        </span>
-                  </div>
-                </li>
-                <!-- /.item -->
-                <li class="item">
-                  <div class="product-img">
-                    <img src="dist/img/user1-128x128.jpg" alt="Product Image">
-                  </div>
-                  <div class="product-info">
-                    <a href="javascript:void(0)" class="product-title">Maria del Hoyo
-                      <span class="label label-success pull-right">Aceptar</span></a>
-                      <br>
-                      <span class="label label-danger pull-right">Cancelar</span></a>
-                        <span class="product-description">
-                          Ciudad
-                        </span>
-                  </div>
-                </li>
-                <!-- /.item -->
+
+                <?php } ?>
+
+
               </ul>
             </div>
             <!-- /.box-body -->
             <div class="box-footer text-center">
+              <?php if(mysql_num_rows($amistade) > 4) { ?>
               <a href="javascript:void(0)" class="uppercase">Ver todas las solicitudes</a>
+              <?php } ?>
             </div>
             <!-- /.box-footer -->
           </div>
@@ -288,7 +256,7 @@ if(!isset($_SESSION['usuario']))
                   {
                   ?>
                     <li>
-                      <img src="avatars/<?php echo $reg['avatar']; ?>" alt="User Image">
+                      <img src="avatars/<?php echo $reg['avatar']; ?>" alt="User Image" width="100" height="200">
                       <a class="users-list-name" href="#"><?php echo $reg['usuario']; ?></a>
                       <span class="users-list-date">Hoy</span>
                     </li>

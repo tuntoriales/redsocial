@@ -10,12 +10,25 @@ if(!isset($_SESSION['usuario']))
   header("Location: login.php");
 }
 ?>
+
+<?php
+  if(isset($_GET['id']))
+  {
+  $id = mysql_real_escape_string($_GET['id']);
+  $pag = $_GET['perfil'];
+
+  $infouser = mysql_query("SELECT * FROM usuarios WHERE id_use = '$id'");
+  $use = mysql_fetch_array($infouser);
+
+  $amigos = mysql_query("SELECT * FROM amigos WHERE de = '$id' AND para = '".$_SESSION['id']."' OR de = '".$_SESSION['id']."' AND para = '$id'");
+  $ami = mysql_fetch_array($amigos);
+  ?>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>NOMBRE DEL USUARIO | REDSOCIAL</title>
+  <title><?php echo $use['nombre']; ?> | REDSOCIAL</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.6 -->
@@ -49,18 +62,7 @@ if(!isset($_SESSION['usuario']))
 
   <?php echo Side (); ?>
 
-  <?php
-  if(isset($_GET['id']))
-  {
-  $id = mysql_real_escape_string($_GET['id']);
-  $pag = $_GET['perfil'];
 
-  $infouser = mysql_query("SELECT * FROM usuarios WHERE id_use = '$id'");
-  $use = mysql_fetch_array($infouser);
-
-  $amigos = mysql_query("SELECT * FROM amigos WHERE de = '$id' AND para = '".$_SESSION['id']."' OR de = '".$_SESSION['id']."' AND para = '$id'");
-  $ami = mysql_fetch_array($amigos);
-  ?>
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
 
@@ -73,7 +75,7 @@ if(!isset($_SESSION['usuario']))
           <!-- Profile Image -->
           <div class="box box-primary">
             <div class="box-body box-profile">
-              <img class="profile-user-img img-responsive img-circle" src="avatars/<?php echo $use['avatar'];?>" alt="User profile picture">
+              <img class="profile-user-img img-responsive" src="avatars/<?php echo $use['avatar'];?>" alt="User profile picture">
 
               <h3 class="profile-username text-center"><?php echo $use['nombre'];?></h3> 
               <?php if($use['verificado'] != 0) {?>

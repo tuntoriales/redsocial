@@ -10,25 +10,12 @@ if(!isset($_SESSION['usuario']))
   header("Location: login.php");
 }
 ?>
-
-<?php
-  if(isset($_GET['id']))
-  {
-  $id = mysql_real_escape_string($_GET['id']);
-  $pag = $_GET['perfil'];
-
-  $infouser = mysql_query("SELECT * FROM usuarios WHERE id_use = '$id'");
-  $use = mysql_fetch_array($infouser);
-
-  $amigos = mysql_query("SELECT * FROM amigos WHERE de = '$id' AND para = '".$_SESSION['id']."' OR de = '".$_SESSION['id']."' AND para = '$id'");
-  $ami = mysql_fetch_array($amigos);
-  ?>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title><?php echo $use['nombre']; ?> | REDSOCIAL</title>
+  <title>REDSOCIAL</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.6 -->
@@ -37,221 +24,140 @@ if(!isset($_SESSION['usuario']))
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- fullCalendar 2.2.5-->
+  <link rel="stylesheet" href="plugins/fullcalendar/fullcalendar.min.css">
+  <link rel="stylesheet" href="plugins/fullcalendar/fullcalendar.print.css" media="print">
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
   <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
-
+  <!-- iCheck -->
+  <link rel="stylesheet" href="plugins/iCheck/flat/blue.css">
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
-
-    <!-- codigo scroll -->
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script src="js/jquery.jscroll.js"></script>
-  <!-- codigo scroll -->
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <?php echo Headerb (); ?>
+<?php echo Headerb (); ?>
 
-  <?php echo Side (); ?>
-
+<?php echo Side (); ?>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Chat
+        <small>13 nuevos mensajes</small>
+      </h1>
+    </section>
 
     <!-- Main content -->
     <section class="content">
-
       <div class="row">
         <div class="col-md-3">
+          <a href="chats.php" class="btn btn-primary btn-block margin-bottom">Volver a los chats</a>
 
-          <!-- Profile Image -->
-          <div class="box box-primary">
-            <div class="box-body box-profile">
-              <img class="profile-user-img img-responsive" src="avatars/<?php echo $use['avatar'];?>" alt="User profile picture">
-
-              <h3 class="profile-username text-center"><?php echo $use['nombre'];?></h3> 
-              <?php if($use['verificado'] != 0) {?>
-              <center><span class="glyphicon glyphicon-ok"></span></center>
-              <?php } ?>
-
-              <p class="text-muted text-center">Software Engineer</p>
-
-              <ul class="list-group list-group-unbordered">
-                <li class="list-group-item">
-                  <b>Followers</b> <a class="pull-right">1,322</a>
-                </li>
-                <li class="list-group-item">
-                  <b>Following</b> <a class="pull-right">543</a>
-                </li>
-                <li class="list-group-item">
-                  <b>Friends</b> <a class="pull-right">13,287</a>
-                </li>
-              </ul>
-              
-              <?php if($_SESSION['id'] != $id) {?>
-              <form action="" method="post">
-              
-              <?php if(mysql_num_rows($amigos) >= 1 AND $ami['estado'] == 0) { ?>
-              <center><h4>Esperando respuesta</h4></center>
-              <?php } else { ?>
-
-              <?php if($use['privada'] == 1 AND $ami['estado'] == 0) { ?>
-              <input type="submit" class="btn btn-primary btn-block" name="seguir" value="Enviar solicitud de amistad">
-              <?php } ?>
-              <?php if($use['privada'] == 1 AND $ami['estado'] == 1) { ?>
-              <input type="submit" class="btn btn-danger btn-block" name="dejarseguir" value="Dejar de seguir">
-              <?php } ?>
-              <?php if($use['privada'] == 0 AND $ami['estado'] == 0) { ?>
-              <input type="submit" class="btn btn-primary btn-block" name="seguirdirecto" value="Seguir">
-              <?php } ?>
-              <?php if($use['privada'] == 0 AND $ami['estado'] == 1) { ?>
-              <input type="submit" class="btn btn-danger btn-block" name="dejarseguir" value="Dejar de seguir">
-              <?php } ?>
-
-
-              <?php } ?>
-              </form>
-              <?php } ?>
-
-              <?php
-              if(isset($_POST['seguir'])) {
-                $add = mysql_query("INSERT INTO amigos (de,para,fecha,estado) values ('".$_SESSION['id']."','$id',now(),'0')");
-                if($add) {echo '<script>window.location="perfil.php?id='.$id.'"</script>';}
-              }
-              ?>
-
-              <?php
-              if(isset($_POST['seguirdirecto'])) {
-                $add = mysql_query("INSERT INTO amigos (de,para,fecha,estado) values ('".$_SESSION['id']."','$id',now(),'1')");
-                if($add) {echo '<script>window.location="perfil.php?id='.$id.'"</script>';}
-              }
-              ?>
-
-              <?php
-              if(isset($_POST['dejarseguir'])) {
-                $add = mysql_query("DELETE FROM amigos WHERE de = '$id' AND para = '".$_SESSION['id']."' OR de = '".$_SESSION['id']."' AND para = '$id'");
-                if($add) {echo '<script>window.location="perfil.php?id='.$id.'"</script>';}
-              }
-              ?>
-              
-              <br>
-              <a href="chat.php?usuario=<?php echo $id; ?>"><input type="button" class="btn btn-default btn-block" name="dejarseguir" value="Enviar chat"></a>
-
-
-            </div>
-            <!-- /.box-body -->
-          </div>
-          <!-- /.box -->
-
-          <!-- About Me Box -->
-          <div class="box box-primary">
+          <div class="box box-solid">
             <div class="box-header with-border">
-              <h3 class="box-title">About Me</h3>
+              <h3 class="box-title">Carpetas</h3>
+
+              <div class="box-tools">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              </div>
             </div>
-            <!-- /.box-header -->
-            <div class="box-body">
-              <strong><i class="fa fa-book margin-r-5"></i> Education</strong>
-
-              <p class="text-muted">
-                B.S. in Computer Science from the University of Tennessee at Knoxville
-              </p>
-
-              <hr>
-
-              <strong><i class="fa fa-map-marker margin-r-5"></i> Location</strong>
-
-              <p class="text-muted">Malibu, California</p>
-
-              <hr>
-
-              <strong><i class="fa fa-pencil margin-r-5"></i> Skills</strong>
-
-              <p>
-                <span class="label label-danger">UI Design</span>
-                <span class="label label-success">Coding</span>
-                <span class="label label-info">Javascript</span>
-                <span class="label label-warning">PHP</span>
-                <span class="label label-primary">Node.js</span>
-              </p>
-
-              <hr>
-
-              <strong><i class="fa fa-file-text-o margin-r-5"></i> Notes</strong>
-
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum enim neque.</p>
+            <div class="box-body no-padding">
+              <ul class="nav nav-pills nav-stacked">
+                <li class="active"><a href="#"><i class="fa fa-inbox"></i> Mis chats
+                  <span class="label label-primary pull-right">13</span></a></li>
+              </ul>
             </div>
             <!-- /.box-body -->
           </div>
-          <!-- /.box -->
+          <!-- /. box -->
         </div>
         <!-- /.col -->
         <div class="col-md-9">
-          <div class="nav-tabs-custom">
-            <ul class="nav nav-tabs">
-              <li class="<?php echo $pag == 'miactividad' ? 'active' : ''; ?>"><a href="?id=<?php echo $id;?>&perfil=miactividad">Actividad</a></li>
-              <li class="<?php echo $pag == 'informacion' ? 'active' : ''; ?>"><a href="?id=<?php echo $id;?>&perfil=informacion">Información</a></li>
-              <li class="<?php echo $pag == 'fotos' ? 'active' : ''; ?>"><a href="?id=<?php echo $id;?>&perfil=fotos">Fotos</a></li>
-            </ul>
-            <div class="tab-content">
-
-                
-          <!-- codigo scroll -->
-          <div class="scroll">
-
-          <?php
-          if($use['privada'] != 1) { ?>
-          
-            <?php
-            $pagina = isset($_GET['perfil']) ? strtolower($_GET['perfil']) : 'miactividad';
-            require_once $pagina.'.php';
-            ?>
-
-          <?php } elseif ($use['privada'] == 1 AND $ami['estado'] == 1) { ?>
-              
-            <?php
-            $pagina = isset($_GET['perfil']) ? strtolower($_GET['perfil']) : 'miactividad';
-            require_once $pagina.'.php';
-            ?>
-
-          <?php } elseif ($use['privada'] == 1 AND $_SESSION['id'] == $id) { ?>
-              
-            <?php
-            $pagina = isset($_GET['perfil']) ? strtolower($_GET['perfil']) : 'miactividad';
-            require_once $pagina.'.php';
-            ?>
-
-
-          <?php } else { ?>
-
-          <center><h2>Este perfil es privado, envia una solicitud</h2></center>
-
-          <?php } ?>
-
-          </div>
-
-            
-                
+          <div class="box box-primary">
+            <div class="box-header with-border">
+              <h3 class="box-title">Compose New Message</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <div class="form-group">
+                <input class="form-control" placeholder="To:">
               </div>
-  
+              <div class="form-group">
+                <input class="form-control" placeholder="Subject:">
+              </div>
+              <div class="form-group">
+                    <textarea id="compose-textarea" class="form-control" style="height: 300px">
+                      <h1><u>Heading Of Message</u></h1>
+                      <h4>Subheading</h4>
+                      <p>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain
+                        was born and I will give you a complete account of the system, and expound the actual teachings
+                        of the great explorer of the truth, the master-builder of human happiness. No one rejects,
+                        dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know
+                        how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again
+                        is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain,
+                        but because occasionally circumstances occur in which toil and pain can procure him some great
+                        pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise,
+                        except to obtain some advantage from it? But who has any right to find fault with a man who
+                        chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that
+                        produces no resultant pleasure? On the other hand, we denounce with righteous indignation and
+                        dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so
+                        blinded by desire, that they cannot foresee</p>
+                      <ul>
+                        <li>List item one</li>
+                        <li>List item two</li>
+                        <li>List item three</li>
+                        <li>List item four</li>
+                      </ul>
+                      <p>Thank you,</p>
+                      <p>John Doe</p>
+                    </textarea>
+              </div>
+              <div class="form-group">
+                <div class="btn btn-default btn-file">
+                  <i class="fa fa-paperclip"></i> Attachment
+                  <input type="file" name="attachment">
+                </div>
+                <p class="help-block">Max. 32MB</p>
+              </div>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+              <div class="pull-right">
+                <button type="button" class="btn btn-default"><i class="fa fa-pencil"></i> Draft</button>
+                <button type="submit" class="btn btn-primary"><i class="fa fa-envelope-o"></i> Send</button>
+              </div>
+              <button type="reset" class="btn btn-default"><i class="fa fa-times"></i> Discard</button>
+            </div>
+            <!-- /.box-footer -->
           </div>
-          <!-- /.nav-tabs-custom -->
+          <!-- /. box -->
         </div>
         <!-- /.col -->
       </div>
       <!-- /.row -->
-
     </section>
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+  <footer class="main-footer">
+    <div class="pull-right hidden-xs">
+      <b>Version</b> 2.3.8
+    </div>
+    <strong>Copyright &copy; 2014-2016 <a href="http://almsaeedstudio.com">Almsaeed Studio</a>.</strong> All rights
+    reserved.
+  </footer>
 
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
@@ -449,17 +355,28 @@ if(!isset($_SESSION['usuario']))
 </div>
 <!-- ./wrapper -->
 
+<!-- jQuery 2.2.3 -->
+<script src="../../plugins/jQuery/jquery-2.2.3.min.js"></script>
 <!-- Bootstrap 3.3.6 -->
-<script src="bootstrap/js/bootstrap.min.js"></script>
+<script src="../../bootstrap/js/bootstrap.min.js"></script>
+<!-- Slimscroll -->
+<script src="../../plugins/slimScroll/jquery.slimscroll.min.js"></script>
 <!-- FastClick -->
-<script src="plugins/fastclick/fastclick.js"></script>
+<script src="../../plugins/fastclick/fastclick.js"></script>
 <!-- AdminLTE App -->
-<script src="dist/js/app.min.js"></script>
+<script src="../../dist/js/app.min.js"></script>
 <!-- AdminLTE for demo purposes -->
-<script src="dist/js/demo.js"></script>
+<script src="../../dist/js/demo.js"></script>
+<!-- iCheck -->
+<script src="../../plugins/iCheck/icheck.min.js"></script>
+<!-- Bootstrap WYSIHTML5 -->
+<script src="../../plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+<!-- Page Script -->
+<script>
+  $(function () {
+    //Add text editor
+    $("#compose-textarea").wysihtml5();
+  });
+</script>
 </body>
 </html>
-<?php
-
-} // finaliza if GET
-?>
